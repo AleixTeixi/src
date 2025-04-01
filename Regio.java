@@ -3,7 +3,6 @@
 import java.util.ArrayList;
 public class Regio {
     // Atributs
-<<<<<<< HEAD
 
     private String nomRegio; 
     private int nombreHabitants; 
@@ -16,7 +15,7 @@ public class Regio {
     ArrayList<LlistatRegions> regionsVeines;
 
     ArrayList<String> _regionsVeines;
-=======
+
     ArrayList<> _regionsVeines;
     // diu een Francesc q millor guardar un map xq també volem guardar la taxa de contacte
     // el map podria ser que la clau  sigui un string i la taxa un float
@@ -26,7 +25,6 @@ public class Regio {
     public Regio() {
         _regionsVeines = new Arraylsit
     }
->>>>>>> 5d8e17a19d31233bd778179a4107b0a9c9ce696a
 
 
     // Mètodes

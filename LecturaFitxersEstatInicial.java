@@ -4,14 +4,30 @@ import java.util.Scanner;
 import java.util.List;
 import java.util.ArrayList;
 import java.io.File;
+import java.io.FileNotFoundException;
+
+class EstatInicial{ // Aquesta classe seria una representació simplificada d'una afectació
+    String nomRegio;
+    String nomVirus;
+    int nInfectats;
+
+    EstatInicial(String nom, String virus, int n){nomRegio = nom; nomVirus = virus; nInfectats = n;}
+}
 
 public abstract class LecturaFitxersEstatInicial {
 
-    public static List<Afectacio> llegirFitxer(String nomFitxer){
+    public static List<EstatInicial> llegirFitxer(File fitxer){
     //Pre: el fitxer existeix; Post: retornem una llista amb la informació continguda en el fitxer
 
-        List<Afectacio> afectacions = new ArrayList<>(); // Vector que retornarem
-        Scanner s = new Scanner(new File(nomFitxer)); // Obrim un scanner
+        List<EstatInicial> estats = new ArrayList<>(); // Vector que retornarem
+        Scanner s = null; // Declarem un scanner
+
+        try{ // Intentem obrir el fitxer
+        s = new Scanner(fitxer); // Obrim l' scanner
+        } catch (FileNotFoundException e){ // Per si volguéssim fer servir l'exception que llança si no hi ha el fitxer per alguna cosa
+            System.out.println("No s'ha trobat el fitxer"); // Scanner ens demana que pensem que fer si per alguna cosa no trobem el fitxer
+        }
+
         List<String> liniesDelFitxer = new ArrayList<>(); // Guardarem totes les línies del fitxer en un array
 
         while(s.hasNextLine()){
@@ -19,26 +35,28 @@ public abstract class LecturaFitxersEstatInicial {
         }
 
         int i = 0; // Comptador pel bucle
+        Scanner t = null; // Declarem un nou scanner
+        String nomRegio = null; // Declarem variables que utilitzarem dins el while
+        String nomVirus = null;
         while(i < liniesDelFitxer.size()){
-            Scanner t = new Scanner(liniesDelFitxer.get(i)); // Inspeccionem la primera línia del fitxer
+            t = new Scanner(liniesDelFitxer.get(i)); // Inspeccionem la primera línia del fitxer
             String element = t.next();
-            String nomRegio = null;
-            String nomVirus = null;
-            if(element.compareTo("#") == 0) // És un comentari, no fem res
-            else{
-                if(element.compareTo("*") == 0) // Ens separa la informació entre les  regions, no fem res
-                else{
-                    if(element.compareTo("regio") == 0) nomRegio = t.next(); // Guardem el nom de la regió
-                    else{
-                        if(element.compareTo("nom_virus") == 0) nomVirus = t.next(); // Guardem el nom del virus
-                        else{
-                            Afectacio a = new Afectacio(nomRegio, nomVirus, t.nextInt()); // Creem una afectació
-                            afectacions.add(a); // Afegim una afectació al vector d'afectacions
-                        }
-                    }
-                }
+            switch (element) { // Bàsicament és com un if-else
+                case "#": // És un comentari, no fem res
+                    break;
+                case "*": // Ens separa la informació entre regions, no fem res
+                    break;
+                case "regio":
+                    nomRegio = t.next(); // Guardem el nom de la regió
+                    break;
+                case "nom_virus":
+                    nomVirus = t.next(); // Guardem el nom del virus
+                    break;  
+                default: // Si no es donen cap dels casos anteriors és que hi posa "infectats"
+                    EstatInicial estat = new EstatInicial(nomRegio, nomVirus, t.nextInt()); // Creem un estat inicial
+                    estats.add(estat); // Afegim l'estat al vector que retornarem
             }
         }
-        return afectacions;
+        return estats;
     }
 }

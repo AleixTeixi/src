@@ -1,34 +1,38 @@
 // Creada per Arnau K. Deprez al 21/03/25
 
-public class Main {
+import java.io.File;
+import java.util.List;
+
+import javafx.application.Application;
+import javafx.stage.Stage;
+
+public class Main extends Application {     // Necessari per treballar amb JavaFX
 
     // Rutes dels arxius: són static per poder accedir-hi sense haver de fer una instància
-    private static String _rutaVirus = "virus.txt";
-    private static String _rutaRegio = "regio.txt";
-    private static String _rutaInici = "inici.txt";
+    private static String _rutaVirus = "fitxers/virus.txt";
+    private static String _rutaRegio = "fitdata/regio.txt";
+    private static String _rutaInici = "fitdata/inici.txt";
 
     public static void main(String[] args) {
+        launch(args); // Inicia la UI de JavaFX
+    }
 
-        // TODO: Aquí me falta saber com arriba la informació dels fitxers (Guillem)
-        
-        //Virus[] virus = LectorVirus.llegirVirus();
-        //Regio[] regions = LectorRegions.llegirRegions();
-        //LectorGeneral.llegirEstatInicial();
-
+    @Override
+    public void start(Stage primaryStage) {     // aquest mètode és el punt d'entrada de les aplicacions JavaFX
+    // Pre: primaryStage (és la finestra principal, creada per JavaFX quan fem launch)
+    // Post: inicia la simulació, l'interacció i la GUI
         Interaccio interaccio = new Interaccio();
+        interaccio.iniciarGUI(primaryStage);
 
-        // Demanar a l'usuari que entri la informació dels fitxers
-        String nomFitxerVirus = null;
-        String nomFitxerRegions = null;
-        String nomFitxerEstatInit = null;
+        List<File> arxius = interaccio.seleccionarArxius();
 
-        String nomFitxerEstatInit = "test.txt";
-
-        EstatInicialLlegit estatInicia = LecturaFitxersEstatInicial.llegirFitxer(nomFitxerEstatInit);
+        // TODO: En Guillem m'ha de passar info dels fitxers x carregar la simulació
+        Virus[] virus = {};
+        Regio[] regions = {}; 
 
 
-        Simulacio simulacio = new Simulacio();
 
+        Simulacio simulacio = new Simulacio(virus, regions, 0, interaccio);
         simulacio.run();
     }
 }
