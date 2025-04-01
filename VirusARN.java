@@ -7,13 +7,11 @@ public class VirusARN extends Virus{
 
 	// Atributs
 	private float _pMutErrorCopia; // Prob. de mutació per error de còpia
-	private float _pMutErrorCoincidencia; // Prob. de mutació per coincidència
 	private int _nMutacions; // Nombre de vegades en que un virus ha mutat
 
-	public VirusARN(String nom, float pMal, float tInc, float tLat, float pMor, float tCon, float pCon, float tImm, FamiliaVirus fam, float pErrC, float pErrcCoinc){
+	public VirusARN(String nom, float pMal, float tInc, float tLat, float pMor, float tCon, float pCon, float tImm, FamiliaVirus fam, float pErrC){
 		super(nom, pMal, tInc, tLat, pMor, tCon, pCon, tImm, fam);
 		_pMutErrorCopia = pErrC;
-		_pMutErrorCoincidencia = pErrcCoinc;
 		_nMutacions = 0;
 	
 	}
@@ -46,7 +44,7 @@ public class VirusARN extends Virus{
 		String nomMutacio = _nom + "_" + _nMutacions;
 
 		// Retornem el nou virus mutat
-		VirusARN virusMutat = new VirusARN(nomMutacio, novaPmal, _tempsIncub, _tempsLatencia, novaPmor, nouTcon, nouPcon, _tempsImmune, _familia, _pMutErrorCopia, _pMutErrorCoincidencia);
+		VirusARN virusMutat = new VirusARN(nomMutacio, novaPmal, _tempsIncub, _tempsLatencia, novaPmor, nouTcon, nouPcon, _tempsImmune, _familia, _pMutErrorCopia);
 
 		return virusMutat;
 	}

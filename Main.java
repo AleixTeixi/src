@@ -11,27 +11,24 @@ public class Main {
 
         // TODO: Aquí me falta saber com arriba la informació dels fitxers (Guillem)
         
-        // Llegir dades dels fitxers (x exemple)
-        //LectorFitxer lectorInfoVirus = new LectorFitxer(_rutaVirus);
-        //LectorFitxer lectorInfoRegions = new LectorFitxer(_rutaRegio);
-        //LectorFitxer lectorEstatInicial = new LectorFitxer(_rutaInici);
-        
-        //Virus[] virus = lectorVirus.llegirVirus();
-        //Regio[] regions = lectorRegions.llegirRegions();
-        //lectorGeneral.llegirEstatInicial();
+        //Virus[] virus = LectorVirus.llegirVirus();
+        //Regio[] regions = LectorRegions.llegirRegions();
+        //LectorGeneral.llegirEstatInicial();
 
-        //Simulacio simulacio = new Simulacio(virus, regions, diesSimulacio);
-        Simulacio simulacio = new Simulacio();
         Interaccio interaccio = new Interaccio();
 
-        String menu = "menu: ";
+        // Demanar a l'usuari que entri la informació dels fitxers
+        String nomFitxerVirus = null;
+        String nomFitxerRegions = null;
+        String nomFitxerEstatInit = null;
 
-        while (true) {
-            //simulacio.stepDia();
-            interaccio.mostrarText(menu);
-            interaccio.rebreInput("entra opcio: ");
-            // Per ara s'ignora el string retornat x l'usuari
-            simulacio.stepDia();
-        }
+        String nomFitxerEstatInit = "test.txt";
+
+        EstatInicialLlegit estatInicia = LecturaFitxersEstatInicial.llegirFitxer(nomFitxerEstatInit);
+
+
+        Simulacio simulacio = new Simulacio();
+
+        simulacio.run();
     }
 }
