@@ -16,14 +16,14 @@ class EstatInicial{ // Aquesta classe seria una representació simplificada d'un
 
 public abstract class LecturaFitxersEstatInicial {
 
-    public static List<EstatInicial> llegirFitxer(File fitxer){
+    public static List<EstatInicial> llegirFitxer(String nomFitxer){
     //Pre: el fitxer existeix; Post: retornem una llista amb la informació continguda en el fitxer
 
         List<EstatInicial> estats = new ArrayList<>(); // Vector que retornarem
         Scanner s = null; // Declarem un scanner
 
         try{ // Intentem obrir el fitxer
-        s = new Scanner(fitxer); // Obrim l' scanner
+        s = new Scanner(new File(nomFitxer)); // Obrim l' scanner
         } catch (FileNotFoundException e){ // Per si volguéssim fer servir l'exception que llança si no hi ha el fitxer per alguna cosa
             System.out.println("No s'ha trobat el fitxer"); // Scanner ens demana que pensem que fer si per alguna cosa no trobem el fitxer
         }
@@ -56,6 +56,7 @@ public abstract class LecturaFitxersEstatInicial {
                     EstatInicial estat = new EstatInicial(nomRegio, nomVirus, t.nextInt()); // Creem un estat inicial
                     estats.add(estat); // Afegim l'estat al vector que retornarem
             }
+            i++; // Augmentem el comptador
         }
         return estats;
     }

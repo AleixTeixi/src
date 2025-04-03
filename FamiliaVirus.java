@@ -12,9 +12,10 @@ public class FamiliaVirus {
     private List<Virus> _virusFamilia;  // Llista de virus de la família
     private float _pMutacioCoincidencia; // Probabilitat de mutacions per coincidència d'aquesta família de virus
 
-    public FamiliaVirus (String nom, float maxVar) {
+    public FamiliaVirus (String nom, float maxVar, float pMutCoinc) {
         _nomFamilia = nom;
         _maxVariacio = maxVar;
+        _pMutacioCoincidencia = pMutCoinc;
         _virusFamilia = new ArrayList<>();
     }
 
