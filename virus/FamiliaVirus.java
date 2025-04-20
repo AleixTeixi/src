@@ -1,4 +1,5 @@
 // Modificacions a càrrec de Guillem Bouzas
+package virus;
 
 import java.util.List;
 import java.util.ArrayList;

@@ -1,3 +1,4 @@
+package fitxers;
 // Autor: Guillem Bouzas
 
 import java.util.Scanner;
@@ -5,23 +6,16 @@ import java.util.List;
 import java.util.ArrayList;
 import java.io.File;
 import java.io.FileNotFoundException;
-
-class InfoFitxerVirus{ // Aquesta classe serveix per retornar la informació continguda dins el fixter amb la informació dels virus 
-    List<FamiliaVirus> families;
-    List<VirusADN> virusAdn;
-    List<VirusARN> virusArn;
-
-    InfoFitxerVirus(List<FamiliaVirus> fam, List<VirusADN> virAd, List<VirusARN> virAr){families = fam; virusAdn = virAd; virusArn = virAr;}
-}
+import virus.*;
 
 public abstract class LecturaFitxersVirus {
 
-    public static InfoFitxerVirus llegirFitxer(String nomFitxer){
+    public static InfoFitxerVirus llegirFitxer(File fitxer){
     //Pre: el fitxer existeix; Post: retornem una llista amb la informació continguda en el fitxer
         Scanner s = null; // Declarem un scanner
 
         try{ // Intentem obrir el fitxer
-        s = new Scanner(new File(nomFitxer)); // Obrim l' scanner
+        s = new Scanner(fitxer); // Obrim l' scanner
         } catch (FileNotFoundException e){ // Per si volguéssim fer servir l'exception que llança si no hi ha el fitxer per alguna cosa
             System.out.println("No s'ha trobat el fitxer"); // Scanner ens demana que pensem que fer si per alguna cosa no trobem el fitxer
         }
@@ -121,6 +115,22 @@ public abstract class LecturaFitxersVirus {
             }
             i++; // Augmentem el comptador
         }
+
+        // Abans de retornar, completarem la informació de les famílies de virus afegint els virus que pertanyen a cada família.
+        for(int k=0; k < f.size(); k++){ // Anem recorrent totes les famílies
+            String familiaPerComparar = f.get(k).toString(); // La família que estem comprovant
+            for(int m=0; m < vd.size(); m++){ // Recorrem el vector de virus ADN
+                if(familiaPerComparar.equals(vd.get(m).familia())){ // Si el virus pertany a la família
+                    f.get(k).afegirVirus(vd.get(m)); // Afegim el virus a la família
+                }
+            }
+            for(int n=0; n < vr.size(); n++){ // el mateix però amb virus ARN
+                if(familiaPerComparar.equals(vr.get(n).familia())){
+                    f.get(k).afegirVirus(vr.get(n));
+                }
+            } 
+        }
+
         return new InfoFitxerVirus(f, vd, vr);
     }
 

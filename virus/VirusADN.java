@@ -1,3 +1,4 @@
+package virus;
 //Modificacions a càrrec de Guillem Bouzas
 
 public class VirusADN extends Virus {

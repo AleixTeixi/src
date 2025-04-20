@@ -1,30 +1,29 @@
 // Creada per Arnau K. Deprez al 21/03/25
 
+package simulacio;
+
+import java.util.List;
+
+import ui.Interaccio;
+
 public class Simulacio {
 
     // Simulació necessita guardar, per cada parell Virus-Regió informació.
     
     private Interaccio  _interaccio;	    // Per manejar l'interfície d'usuari
-    private Virus[]     _virus;             // LListat de virus
-    private Regio[]     _regions;           // Llistat de regions
-    private int         _diesSimulacio;     // Counter de dies de simulació
+    private List<FamiliaVirus> _families;
+    private List<VirusADN> _virusAdn;
+    private List<VirusARN> _virusArn;
+    private int _diesSimulacio;     // Counter de dies de simulació
 
-    
-    public Simulacio(Virus[] virus, Regio[] regions, int diesSimulacio, Interaccio interaccio) {
+    public Simulacio(Interaccio interaccio, int dies, List<FamiliaVirus> families, List<VirusADN> virusAdn, List<VirusARN> virusArn) {
     // Pre: dades llegides del fitxer
     // Post: Simulacio amb paràmetres del fitxer
-        this._virus = virus;
-        this._regions = regions;
+        this._virusAdn = virusAdn;
+        this._virusArn = virusArn;
+        this._families = families;
         this._diesSimulacio = 0;
         this._interaccio = interaccio;
-    }
-
-    public Simulacio() {
-    // Pre: --
-    // Post: Simulació iniciada amb paràmetres buits
-        this._virus = null;
-        this._regions = null;
-        this._diesSimulacio = 0;
     }
 
     public void stepNDies(int n) {
@@ -49,7 +48,15 @@ public class Simulacio {
 
         // fer els càlculs
 
+
         // actualitzar GUI (passar nous stats a Interaccio)
         _interaccio.updateStats(_diesSimulacio);    // falta molt, per ara només s'actualitza el dia
+    }
+
+    public void confinarRegio(Regio a, Regio b) {
+    // Pre: Regió seleccionada a la GUI
+    // Post: es confina la regió
+
+        // La ràtio externa de contactes d’una regió cap a l’altra passarà a ser 0.
     }
 }
