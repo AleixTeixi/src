@@ -94,9 +94,9 @@ public class Afectacio {
         int poblacio = _regio.obtenirPoblacio();
         int immunes = histogramaImmunes.getOrDefault(dia, 0);
         int infectats = histogramaInfectats.getOrDefault(dia, 0);
-        int morts = histogramaMortsPrevistos.getOrDefault(dia, 0);
-        nombreSans = poblacio - infectats - immunes;
-        return Math.max(nombreSans);
+        int morts = _totalMorts;
+        nombreSans = poblacio - infectats - immunes-morts;
+        return Math.max(nombreSans,0);
     }
 
     public int determinarContagiosos(int dia) {
@@ -119,8 +119,8 @@ public class Afectacio {
         //Pre:--
         //Post: retorna el nombre de contagis externs donat un dia
         double contagisExterns = 0.0;
-        for (Regio.LListatRegions i : _regio.regionsVeines) {
-            if (!i.esConfinada(i.obtenirNomRegio())) {
+        for (Regio.LlistatRegions veina : _regio.regionsVeines) {
+            if (!i.esConfinada(veina.obtenirNomRegio())) {
                 int sansVeina = i.determinarSans(dia - 1);
                 int contagiososVeina = i.determinarContagiosos(dia - 1);
                 int poblacioVeina = i.obtenirPoblacioDia(dia - 1);
@@ -138,13 +138,17 @@ public class Afectacio {
         //Post: retorna el nombre de contagis interns donat un dia
         double contagisInterns = 0.0;
         int PodenContagiar = determinarContagiosos(dia - 1);
-        int poblacio = obtenirPoblacioDia(dia - 1);
+        int poblacioDiaAnterior = obtenirPoblacioDia(dia - 1);
+        int sansDiaAnterior = determinarSans(dia - 1);
         float probabilitatContagi = _virus.obtenirProbabilitatContagi();
         double taxaInternContactes = _regio.obtenirRatioInternContactesActual();
-        contagisInterns = (taxaInternContactes * taxaInternContactes * (PodenContagiar / poblacio)
-                * probabilitatContagi);
+        if (poblacioDiaAnterior > 0) {
+            contagisInterns = sansDiaAnterior * taxaInternContactes * probabilitatContagi
+                    * (PodenContagiar / (double) poblacioDiaAnterior);
+        }
+            
         return contagisInterns;
-    }
+        }
 
     private int determinarNousContagis(int dia) {
         //Pre:--
