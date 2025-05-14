@@ -37,14 +37,14 @@ public abstract class Virus {
     }
 
     public String familia() {
-        //Pre: ---; Post: retorna el nom de la família a la qual pertany el virus
+    //Pre: ---; Post: retorna el nom de la família a la qual pertany el virus
         return this._familia.toString();
     }
     
     public float obtenirProbabilitatContagi() {
         //Pre:--
         //Post: ens retorna la probabilitat de contagi del virus
-        return this.probContagi;
+        return this._probContagi;
     }
 
     public float obtenirTempsLatencia() {
@@ -75,5 +75,30 @@ public abstract class Virus {
         //Pre:--
         //Post: ens retorna la taxa de mortalitat del virus
         return this._taxaMort;
+    }
+
+    @Override
+    public String toString(){
+    //Pre:-- 
+    //Post: converteix l'obejecte en string
+        return this._nom;
+    }
+
+    public boolean mesFort(Virus vir){
+    // Pre: --;
+    // Post: retorna cert si this és un virus més fort que vir, altrament fals
+        boolean fort = false;
+        if(this._probContagi == vir._probContagi){
+            if(this._probMalaltia == vir._probMalaltia){
+                if(this._nom.compareTo(vir._nom) < 0) // comparació per ordre alfabètic (si tenen la mateixa taxa de contagi i prob Malaltia)
+                    fort = true; // this va primer en ordre alfabètic
+            }
+            else
+                fort = this._probMalaltia > vir._probMalaltia; // comparació per prob Malaltia (si tenen la mateix taxa de contagi)
+        }
+        else
+            fort = this._probContagi > vir._probContagi; // comparació per taxa de contagi
+
+        return fort;
     }
 }

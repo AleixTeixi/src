@@ -35,6 +35,22 @@ public class FamiliaVirus {
         _virusFamilia.add(vir);
     }
 
+    public Virus buscarVirus(String nom){
+    //Pre: ---;  Post: retorna el virus amb el nom que li hem passat, si no existeix aquest virus retorna null
+        boolean trobat = false;
+        int i = 0;
+        while(!trobat && i < this._virusFamilia.size()){
+            if(nom.equals(this._virusFamilia.get(i).toString()))
+                trobat = true;
+            else 
+                i++;
+        }
+        if(trobat)
+            return this._virusFamilia.get(i);
+        else
+            return null;
+    }
+
     @Override
     public String toString() {
     // Pre: cert; Post: Converteix l'objecte a String

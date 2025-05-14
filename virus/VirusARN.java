@@ -54,24 +54,8 @@ public class VirusARN extends Virus{
 		return virusMutat;
 	}
 	
-	public VirusARN mutarPerCoincidencia(VirusARN b){ // FALTA ENCARA ACABAR DE DEFINIR
-	//Pre: els dos virus són de la mateixa família; Post: retorna un virus mutat a partir de dos virus "pare"
-
-		// Generador de nombres Aleatoris
-		Random generadorAleatoris = new Random();
-		float p = generadorAleatoris.nextFloat();
-
-		// Modifiquem els paràmetres
-		float novaPmal = p*this._probMalaltia + (1-p)*b._probMalaltia;
-		p = generadorAleatoris.nextFloat(); // Obtenim un altre nombre aleatori
-
-		float novaPmor = p*this._taxaMort + (1-p)*b._taxaMort;
-		p = generadorAleatoris.nextFloat();
-
-		float nouTcon = p*this._tempsContagi + (1-p)*b._tempsContagi;
-		p = generadorAleatoris.nextFloat();
-
-		float nouPcon = p*this._tempsContagi  + (1-p)*b._tempsContagi;
+	public Virus mutarPerCoincidencia(VirusARN b){ 
+	//Pre: els dos virus són de la mateixa família; Post: retorna un virus mutat a partir de dos virus "pare", si el virus ja existia retorna la mutació ja existent
 		
 		// Per concatenar els noms sempre de la mateixa manera
 		String nomMutacio = null;
@@ -83,11 +67,32 @@ public class VirusARN extends Virus{
 			nomMutacio = b._nom + "_" + this._nom + "_"; // cas this == grip_1 i b == grip
 		}
 
-		// Creem el nou virus, la resta de paràmetres seran la mitjana entre els dos virus
-		VirusARN virusMutat = new VirusARN(nomMutacio, novaPmal, (this._tempsIncub + b._tempsIncub)/2, (this._tempsLatencia + b._tempsLatencia)/2,
-									novaPmor, nouTcon, nouPcon, (this._tempsImmune + b._tempsImmune)/2, this._familia, (this._pMutErrorCopia + b._pMutErrorCopia)/2);
+		Virus virusMutat = this._familia.buscarVirus(nomMutacio); // Cerquem si el virus existeix
 
-		_familia.afegirVirus(virusMutat); // Afegim el virus a la seva família
+		if(virusMutat == null){ // si el virus no existeix el creem
+
+			// Generador de nombres Aleatoris
+			Random generadorAleatoris = new Random();
+			float p = generadorAleatoris.nextFloat();
+
+			// Modifiquem els paràmetres
+			float novaPmal = p*this._probMalaltia + (1-p)*b._probMalaltia;
+			p = generadorAleatoris.nextFloat(); // Obtenim un altre nombre aleatori
+
+			float novaPmor = p*this._taxaMort + (1-p)*b._taxaMort;
+			p = generadorAleatoris.nextFloat();
+
+			float nouTcon = p*this._tempsContagi + (1-p)*b._tempsContagi;
+			p = generadorAleatoris.nextFloat();
+
+			float nouPcon = p*this._tempsContagi  + (1-p)*b._tempsContagi;
+			
+			// Creem el nou virus, la resta de paràmetres seran la mitjana entre els dos virus
+			virusMutat = new VirusARN(nomMutacio, novaPmal, (this._tempsIncub + b._tempsIncub)/2, (this._tempsLatencia + b._tempsLatencia)/2,
+										novaPmor, nouTcon, nouPcon, (this._tempsImmune + b._tempsImmune)/2, this._familia, (this._pMutErrorCopia + b._pMutErrorCopia)/2);
+
+			_familia.afegirVirus(virusMutat); // Afegim el virus a la seva família
+		}
 
 		return virusMutat;
 	}
