@@ -41,37 +41,37 @@ public abstract class Virus {
         return this._familia.toString();
     }
     
-    public float obtenirProbabilitatContagi() {
+    public float probabilitatContagi() {
         //Pre:--
         //Post: ens retorna la probabilitat de contagi del virus
         return this._probContagi;
     }
 
-    public float obtenirTempsLatencia() {
+    public float tempsLatencia() {
         //Pre:--
         //Post: ens retorna el temps de latència del virus
         return this._tempsLatencia;
     }
     
-    public float obtenirTempsContagi() {
+    public float tempsContagi() {
         //Pre:--
         //Post: ens retorna el temps de contagi del virus
         return this._tempsContagi;
     }
     
-    public float obtenirProbabilitatMalaltia() {
+    public float probabilitatMalaltia() {
         //Pre:--
         //Post: ens retorna la probabilitat de malaltia del virus
         return this._probMalaltia;
     }
     
-    public float obtenirTempsIncubacio() {
+    public float tempsIncubacio() {
         //Pre:--
         //Post: ens retorna el temps d'incubació del virus
         return this._tempsIncub;
     }
 
-    public float obtenirTaxaMort() {
+    public float taxaMort() {
         //Pre:--
         //Post: ens retorna la taxa de mortalitat del virus
         return this._taxaMort;
@@ -82,23 +82,5 @@ public abstract class Virus {
     //Pre:-- 
     //Post: converteix l'obejecte en string
         return this._nom;
-    }
-
-    public boolean mesFort(Virus vir){
-    // Pre: --;
-    // Post: retorna cert si this és un virus més fort que vir, altrament fals
-        boolean fort = false;
-        if(this._probContagi == vir._probContagi){
-            if(this._probMalaltia == vir._probMalaltia){
-                if(this._nom.compareTo(vir._nom) < 0) // comparació per ordre alfabètic (si tenen la mateixa taxa de contagi i prob Malaltia)
-                    fort = true; // this va primer en ordre alfabètic
-            }
-            else
-                fort = this._probMalaltia > vir._probMalaltia; // comparació per prob Malaltia (si tenen la mateix taxa de contagi)
-        }
-        else
-            fort = this._probContagi > vir._probContagi; // comparació per taxa de contagi
-
-        return fort;
     }
 }

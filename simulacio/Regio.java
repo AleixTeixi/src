@@ -17,11 +17,14 @@ public class Regio {
     //Mapa per poder guardar la taxa de contacte on tenim la clau de nom virus guardada com a string i la taxa com a float
     private Map<Virus, Afectacio> afectacions;
 
-    //Mapa per poder guardar la ratio externa de contactes on la clau de nom regio guardada com a sting i com a valor la ratio de contacte extern
-    private Map<String, Float> ratioExternaContactesInicial;
-    private Map<String, Float> ratioExternaContactesActual;
+    //Camp static per poder guardar la info de totes les regions
+    private static Map<String, Regio> totesRegions = new HashMap<>();
 
-    private static class LlistatRegions{
+    //Mapa per poder guardar la ratio externa de contactes on la clau de nom regio guardada com a sting i com a valor la ratio de contacte extern
+    private Map<String, Double> ratioExternaContactesInicial;
+    private Map<String, Double> ratioExternaContactesActual;
+    private ArrayList<LlistatRegions> regionsVeines;  
+    public static class LlistatRegions{
         public String nomRegio;
         public boolean confinada; // true si està confinada
 
@@ -30,8 +33,7 @@ public class Regio {
             this.confinada = confinada;
         }
     }
-
-    private ArrayList<LlistatRegions> regionsVeines;    
+  
     
 
     //MÈTODES CONSTRUCTORS
@@ -46,11 +48,14 @@ public class Regio {
         this.ratioExternaContactesInicial = new HashMap<>();
         this.ratioExternaContactesActual = new HashMap<>();
         this.afectacions = new HashMap<>();
+
+        //Afegim la regio al mapa de regions
+        totesRegions.put(nomRegio, this);
     }
 
     //MÈTODES MODIFICADORS
 
-    public void afegirVeina(String nomRegio, float ratioexternaentrada){
+    public void afegirVeina(String nomRegio, double ratioexternaentrada){
         //Pre: nomRegio no existeix com a veina
         //Post: afegim la regio com a veina i la ratio externa de contactes inicial
         regionsVeines.add(new LlistatRegions(nomRegio, false)); //False perque considerem que la regioVeina no esta confinada inicialment
@@ -64,26 +69,28 @@ public class Regio {
         for(LlistatRegions i:regionsVeines){
             if(i.nomRegio.equals(nomRegio)){
                 i.confinada = true;
-                ratioExternaContactesActual.put(nomRegio, 0.0f);
+                ratioExternaContactesActual.put(nomRegio,0.0);
                 break;
             }
         }
     }
 
-    public void confinamentTou() {
-    //Pre: regio r i regio R són veïnes i tancades
-    //Post:ratios externes de contactes a zero
-        for(LlistatRegions i:regionsVeines){
-            tancar(i.nomRegio);
-        }
+    public void confinamentTou(Regio altraRegio) {
+        //Pre: regio r i regio R són veïnes i tancades
+        //Post:ratios externes de contactes a zero entre les dues regions que tenim
+        tancar(altraRegio.NomRegio());
+        altraRegio.tancar(this.nomRegio);
     }
+    
 
-    public void confinamentDur (float ratioInternContactesNova) {
+    public void confinamentDur (double ratioInternContactesNova) {
     //Pre: regio r i regio R són veïnes i tancades
     //Post: ratios externes de contactes a zero i ratio interna de contactes modificada
         this.ratioInternContactesInicial=this.ratioInternContactesActual;
         this.ratioInternContactesActual = ratioInternContactesNova;
-        confinamentTou();
+        for (LlistatRegions i : regionsVeines) {
+            this.tancar(i.nomRegio);
+        }
     }
 
     public void desconfinar(String nomRegio){
@@ -92,7 +99,7 @@ public class Regio {
     for (LlistatRegions i : regionsVeines) {
         if (i.nomRegio.equals(nomRegio) && i.confinada) {
             i.confinada = false;
-            float ratioExternaOriginal = ratioExternaContactesInicial.getOrDefault(nomRegio, 0.0f);
+            Double ratioExternaOriginal = ratioExternaContactesInicial.get(nomRegio);
             ratioExternaContactesActual.put(nomRegio, ratioExternaOriginal);
             break;
             }
@@ -107,7 +114,11 @@ public class Regio {
             for (LlistatRegions i : regionsVeines) {
                 if (i.confinada) {
                     i.confinada = false;
-                    ratioExternaContactesActual.put(i.nomRegio, ratioExternaContactesInicial.getOrDefault(i.nomRegio, 0.0f));
+                    Double ratioExternaOriginal = ratioExternaContactesInicial.get(i.nomRegio);
+                    if (ratioExternaOriginal != null) {
+                        ratioExternaContactesActual.put(i.nomRegio, ratioExternaOriginal);
+                    }
+                
                 }
             }
         }
@@ -137,29 +148,35 @@ public class Regio {
         return false;
     }
     
-    public int obtenirPoblacio() {
+    public int Poblacio() {
         //Pre:--
         //Post: retornem el nombre d'habitants de la regio
         return this.nombreHabitants;
     }
 
-    public double obtenirRatioInternContactesActual() {
+    public double RatioInternContactesActual() {
         //Pre:--
         //Post: es retorna la ratio interna de contactes actual de la regio
         return this.ratioInternContactesActual;
     }
 
-    public float obtenirRatioExternaContactesActual(String nomRegio) {
+    public double RatioExternaContactesActual(String nomRegio) {
         //Pre: nomRegio es tracta d'una regio veina R'
         //Post: retorna la ratio externa de contactes actual de la regio R
         if (!esVeina(nomRegio)) {
             return 0.0f;
         } else {
-            return this.ratioExternaContactesActual.getOrDefault(nomRegio, 0.0f);
+            Double ratio = ratioExternaContactesActual.get(nomRegio);
+            if (ratio == null) {
+                return 0.0f;
+            }
+            else {
+                return ratio;
+            }
         }
     }
     
-    public String obtenirNomRegio() {
+    public String NomRegio() {
         //Pre:--
         //Post: es retorna el nom de la regio
         return this.nomRegio;
@@ -172,12 +189,30 @@ public class Regio {
             return false;
         }
         for (LlistatRegions i : regionsVeines) {
-            if (!i.confinada || ratioExternaContactesActual.getOrDefault(i.nomRegio, 1.0f) != 0.0f) {
+            if (!i.confinada || ratioExternaContactesActual.getOrDefault(i.nomRegio, 0.0) != 0.0) {
                 return false;
             }
         }
         return true;
     }
 
+    public ArrayList<LlistatRegions> RegionsVeines() {
+        //Pre:RegionsVeines no es null
+        //Post: Es retorna la llista de regions veines
+        return this.regionsVeines;
+    }
+
+    public Afectacio Afectacio(Virus virus) {
+        //Pre: virus no es null
+        //Post: retorna la afectació associada al virus
+        return this.afectacions.get(virus);
+    }
+
+    public static Regio buscarRegio(String nomRegio) {
+        //Pre: nomRegio no es null
+        //Post: retorna la regio associada al nomRegio
+        return totesRegions.get(nomRegio);
+    }
+    
 }   
 

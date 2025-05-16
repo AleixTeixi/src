@@ -1,17 +1,17 @@
 package fitxers;
-// Autor: Guillem Bouzas
 
 import java.util.Scanner;
 import java.util.List;
 import java.util.ArrayList;
 import java.io.File;
 import java.io.FileNotFoundException;
-import virus.*;
 
 public abstract class LecturaFitxersVirus {
 
-    public static InfoFitxerVirus llegirFitxer(File fitxer){
-    //Pre: el fitxer existeix; Post: retornem una llista amb la informació continguda en el fitxer
+    public static void llegirFitxer(File fitxer, List<InfoFamilia> families, List<InfoVirus> virus){
+    // Pre: el fitxer existeix
+    // post: families i virus omplertes amb la informació continguda al fitxer
+
         Scanner s = null; // Declarem un scanner
 
         try{ // Intentem obrir el fitxer
@@ -21,117 +21,128 @@ public abstract class LecturaFitxersVirus {
         }
 
         List<String> liniesDelFitxer = new ArrayList<>(); // Guardarem totes les línies del fitxer en un array
-
         while(s.hasNextLine()){
             liniesDelFitxer.add(s.nextLine()); // Emplenem el vector de línies del fitxer amb el contingut del fitxer
         }
 
-        int i = 0; // Comptador pel bucle
+        int i = 0; // Comptador pels bucles
         Scanner t = null; // Declarem un nou scanner
 
-        List<FamiliaVirus> f = new ArrayList<>(); // vectors on anirem guardant les informacions
-        List<VirusADN> vd = new ArrayList<>();
-        List<VirusARN> vr = new ArrayList<>();
+        omplirFamilies(families, t, i, liniesDelFitxer);
+        omplirVirus(virus, t, i, liniesDelFitxer);
 
-        String nomFamilia = null; // Declarem dades de la família
-        float probMutCoincidencia = 0;
-        float tpcMaximVariacio = 0;
+    }
 
-        String nomVirus = null; // Decclarem les dades de virus
-        FamiliaVirus fVirus = null;
-        float probMalaltia = 0;
-        float latencia = 0;
-        float incubacio = 0;
-        float duaradaContagi = 0;
-        float duaradaImmunitat = 0;
-        float mortalitat = 0;
-        float taxaContagi = 0;
-        float probMutCopia = 0;
+    private static void omplirFamilies(List<InfoFamilia> f, Scanner t, int counter, List<String> linies){
+    // Pre: linies amb el contingut del fitxer
+    // Post: f amb la informació de les famílies de virus a f
 
-        boolean esInfoFamilia = false; // Per saber si la informació que vindrà serà d'una família o un virus
-        boolean esArn = false; // Per saber si la informació que vindrà serà d'un virus ARN o ADN
+        // Variables que usarem per a l'estructura InfoFamilia
+        String nom = null;
+        float p = 0;
+        float tcp = 0;
 
-        while(i < liniesDelFitxer.size()){
-            t = new Scanner(liniesDelFitxer.get(i)); // Inspeccionem la primera línia del fitxer
-            String element = t.next();
-            switch(element){
-                case "#": // És un comentari, no fem res
+        boolean acabat = false; // Per saber quan ja no tenim informació de les famílies
+
+        do{
+
+            t = new Scanner(linies.get(counter)); // Inspeccionem la primera línia del fitxer
+            String comparador = t.next();
+            switch(comparador){
+                case "#": // comentari, no fem res
                     break;
-                case "*": // Ens separa la informació entre families/virus, aprofitarem per crear un virus o una famiília i afegir-la al seu corresponent vector.
-                    if(esInfoFamilia) f.add(new FamiliaVirus(nomFamilia, tpcMaximVariacio, probMutCoincidencia));
-                    else{if(esArn) vr.add(new VirusARN(nomVirus, probMalaltia, incubacio, latencia, mortalitat, duaradaContagi, taxaContagi, duaradaImmunitat, fVirus, probMutCopia));
-                         else vd.add(new VirusADN(nomVirus, probMalaltia, incubacio, latencia, mortalitat, duaradaContagi, taxaContagi, duaradaImmunitat, fVirus));
-                    }
+                case "families": // indica que la informació que trobarem a continuació és de les families, no fem res
                     break;
-                case "families": // La informacio de les següents línies va referida a famílies
-                    esInfoFamilia = true;
+                case "nom":
+                    nom = t.next();
                     break;
-                case "nom": // Guardem el nom de la família o el virus
-                    if(esInfoFamilia) nomFamilia = t.next();
-                    else nomVirus = t.next();
+                case "prob_mut_coincidencia":
+                    p = t.nextFloat();
                     break;
-                case "prob_mut_coincidencia": // Guardem la probabilitat de mutació per coincidencia
-                    probMutCoincidencia = t.nextFloat();
+                case "tpc_maxim_variacio":
+                    tcp = t.nextFloat();
                     break;
-                case "tpc_maxim_variacio": // Guardem el tcp màxim de variació
-                    tpcMaximVariacio = t.nextFloat();
+                case "virus":
+                    acabat = true;
                     break;
-                case "virus": // Indiquem que la informació que vindrà ara correspondrà a virus i no famílies
-                    esInfoFamilia = false;
+                default: // hem trobat *
+                    f.add(new InfoFamilia(nom, p, tcp));
                     break;
-                case "tipus": // Indiquem si informació que ens arribarà correspon a un virus ARN o ADN
-                    if(t.next().equals("ARN")) esArn = true;
-                    else esArn = false;
+
+            }
+
+            counter ++;
+
+        }while(counter < linies.size() && !acabat); // Fins que el fitxer s'acabés o hem acabat d'omplir tota la informació de les families
+
+    }
+
+    private static void omplirVirus(List<InfoVirus> v, Scanner t, int counter, List<String> linies){
+    // Pre: linies amb la informació del fitxer
+    // Post: v amb la informació relacionada amb virus del fitxer
+
+        // variables que usarem per l'estructura InfoVirus
+        String nomVir = null;
+        String tipus = null;
+        String fam = null;
+        float pMal = 0;
+        float inc = 0;
+        float lat = 0;
+        float dCon = 0;
+        float dImm = 0;
+        float mort = 0;
+        float tCon = 0;
+        float pCop = 0;
+
+        while(counter < linies.size()) {
+
+            t = new Scanner(linies.get(counter)); // Inspeccionem la primera línia del fitxer
+            String comparador = t.next();
+
+            switch(comparador){
+                case "#": // comentari, no fem res
                     break;
-                case "familia": // Busquem la família a la que pertany el virus (l'haurem creat prèviament)
-                    for(int j=0; j < f.size(); j++){
-                        FamiliaVirus familia = f.get(j);
-                        if(familia.toString().equals(t.next())){fVirus = familia; break;}
-                    }
+                case "nom":
+                    nomVir = t.next();
                     break;
-                case "prob_malaltia": // Guardem la resta de dades referides a un virus
-                    probMalaltia = t.nextFloat();
+                case "tipus":
+                    tipus = t.next();
+                    break;
+                case "familia":
+                    fam = t.next();
+                    break;
+                case "prob_malaltia":
+                    pMal = t.nextFloat();
                     break;
                 case "incubacio":
-                    incubacio = t.nextFloat();
+                    inc = t.nextFloat();
                     break;
                 case "latencia":
-                    latencia = t.nextFloat();
+                    lat = t.nextFloat();
                     break;
                 case "durada_contagi":
-                    duaradaContagi = t.nextFloat();
+                    dCon = t.nextFloat();
                     break;
                 case "durada_immunitat":
-                    duaradaImmunitat = t.nextFloat();
+                    dImm = t.nextFloat();
                     break;
                 case "mortalitat":
-                    mortalitat = t.nextFloat();
+                    mort = t.nextFloat();
                     break;
                 case "taxa_contagi":
-                    taxaContagi = t.nextFloat();
+                    tCon = t.nextFloat();
                     break;
-                default:
-                    probMutCopia = t.nextFloat();
+                case "prob_mutacio_copia":
+                    pCop = t.nextFloat();
+                    break;
+                default: // Trobem un *, un separador entre virus
+                    v.add(new InfoVirus(nomVir, tipus, fam, pMal, inc, lat, dCon, dImm, mort, tCon, pCop));
+                    break;
             }
-            i++; // Augmentem el comptador
+
+            counter ++;
         }
 
-        // Abans de retornar, completarem la informació de les famílies de virus afegint els virus que pertanyen a cada família.
-        for(int k=0; k < f.size(); k++){ // Anem recorrent totes les famílies
-            String familiaPerComparar = f.get(k).toString(); // La família que estem comprovant
-            for(int m=0; m < vd.size(); m++){ // Recorrem el vector de virus ADN
-                if(familiaPerComparar.equals(vd.get(m).familia())){ // Si el virus pertany a la família
-                    f.get(k).afegirVirus(vd.get(m)); // Afegim el virus a la família
-                }
-            }
-            for(int n=0; n < vr.size(); n++){ // el mateix però amb virus ARN
-                if(familiaPerComparar.equals(vr.get(n).familia())){
-                    f.get(k).afegirVirus(vr.get(n));
-                }
-            } 
-        }
-
-        return new InfoFitxerVirus(f, vd, vr);
     }
 
 }

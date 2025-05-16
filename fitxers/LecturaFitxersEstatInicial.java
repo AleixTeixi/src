@@ -33,6 +33,8 @@ public abstract class LecturaFitxersEstatInicial {
         String nomVirus = null;
         while(i < liniesDelFitxer.size()){
             t = new Scanner(liniesDelFitxer.get(i)); // Inspeccionem la primera línia del fitxer
+            i++; // Augmentem el comptador 
+            if (!t.hasNext()) continue; // Per si hi ha espais en blanc al fitxer
             String element = t.next();
             switch (element) { // Bàsicament és com un if-else
                 case "#": // És un comentari, no fem res
@@ -49,7 +51,6 @@ public abstract class LecturaFitxersEstatInicial {
                     EstatInicial estat = new EstatInicial(nomRegio, nomVirus, t.nextInt()); // Creem un estat inicial
                     estats.add(estat); // Afegim l'estat al vector que retornarem
             }
-            i++; // Augmentem el comptador
         }
         return estats;
     }

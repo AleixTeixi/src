@@ -4,7 +4,7 @@ package virus;
 
 import java.util.Random;
 
-public class VirusARN extends Virus{
+public class VirusARN extends Virus implements Comparable<VirusARN> {
 //Aquesta classe representa un virus mutable, és per això que serà l'encarregada de gestionar les diferents mutacions que pot patir un virus
 
 	// Atributs
@@ -95,5 +95,35 @@ public class VirusARN extends Virus{
 		}
 
 		return virusMutat;
+	}
+
+	@Override
+    // retorna -1 si this és més fort que v, 1 si és al contrari, i 0 si tenen igual força 
+    public int compareTo(VirusARN vir) {
+		int resultat = 0; // si són iguals tornarà 0
+		if(this._probContagi == vir._probContagi){
+            if(this._probMalaltia == vir._probMalaltia){
+				// comparació per ordre alfabètic (si tenen la mateixa taxa de contagi i prob Malaltia)
+                if(this._nom.compareTo(vir._nom) < 0) resultat = -1; // this va primer en ordre alfabètic
+				else{
+					if(this._nom.compareTo(vir._nom) > 0) resultat = 1; 
+				}
+			}
+            else {
+			// comparació per prob Malaltia (si tenen la mateix taxa de contagi)
+				if(this._probMalaltia > vir._probMalaltia) resultat = -1;
+                else {
+					if(this._probMalaltia < vir._probMalaltia) resultat = 1;
+				}
+			}
+        }
+        else {
+		// comparació per taxa de contagi
+			if(this._probContagi > vir._probContagi) resultat = -1;
+			else {
+				if(this._probContagi < vir._probContagi) resultat = 1;
+			}
+		}
+		return resultat;
 	}
 }

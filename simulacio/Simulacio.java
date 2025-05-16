@@ -6,57 +6,65 @@ import java.util.List;
 
 import ui.Interaccio;
 
+import virus.FamiliaVirus;
+import virus.VirusADN;
+import virus.VirusARN;
+
+import fitxers.EstatInicial;
+
 public class Simulacio {
 
-    // Simulació necessita guardar, per cada parell Virus-Regió informació.
-    
-    private Interaccio  _interaccio;	    // Per manejar l'interfície d'usuari
-    private List<FamiliaVirus> _families;
-    private List<VirusADN> _virusAdn;
-    private List<VirusARN> _virusArn;
-    private int _diesSimulacio;     // Counter de dies de simulació
+    private Interaccio _interaccio; // Per manejar l'interfície d'usuari
+    private List<FamiliaVirus> _families; // Llista de families
+    private List<VirusADN> _virusAdn; // " de virusAdn
+    private List<VirusARN> _virusArn; // " de virusArn
+    private List<Regio> _regions; // " de regions
+    private int _diesSimulacio; // Comptador de dies de simulació
 
-    public Simulacio(Interaccio interaccio, int dies, List<FamiliaVirus> families, List<VirusADN> virusAdn, List<VirusARN> virusArn) {
-    // Pre: dades llegides del fitxer
-    // Post: Simulacio amb paràmetres del fitxer
+    public Simulacio(Interaccio interaccio, List<FamiliaVirus> families, List<VirusADN> virusAdn, List<VirusARN> virusArn, List<Regio> regions, int dies) {
+    // Ctor
+        this._interaccio = interaccio;
+        this._families = families;
         this._virusAdn = virusAdn;
         this._virusArn = virusArn;
-        this._families = families;
+        this._regions = regions;
         this._diesSimulacio = 0;
-        this._interaccio = interaccio;
     }
 
-    public void stepNDies(int n) {
-    // Pre: n > 0
-    // Post: avança la simulació tants dies com n
-        if (0 >= n) {
-            System.out.println("nombre de dies invalid");
-            return;
-        }
-    
-        for (int i = 0; i < n; i++) {
-            this.stepDia();
-        }
-    }
+    public void simulaDia() {
+    // Pre: --; Post: avança la simulació 1 dia
 
-    public void stepDia() {
-    // Pre: cert
-    // Post: avança la simulació 1 dia
-        // Càlculs adients
-        System.out.println("Dia " + _diesSimulacio + "!");
+        // Extret del moodle:
+        // 1. Classe **Simulador**
+        // El *Simulador* és el nucli que coordina totes les altres classes. Les seves
+        // funcions principals podrien ser:
+        // - Instanciar objectes de *Regió* amb les seves regions limítrofes, i associar-hi diferents objectes *Virus*.
+        // - Coordinar les afectacions mitjançant instàncies d'*Afectació*.
+        // - Actualitzar la simulació amb un mètode `simular_dia()` que:
+            // - Informa a cada regió perquè actualitzi el seu estat amb l'evolució del dia (contagis, recuperacions, etc.).
+            // - Gestiona la propagació del virus entre regions limítrofes.
         _diesSimulacio++;
+        System.out.println("Processant dia " + _diesSimulacio + "...");
 
-        // fer els càlculs
+        for (int i = 0; i < _regions.size(); i++) {
+            // Cada regió ha de avançar els morts, malalts, immunes, etc un dia (als histogrames)
+        }
 
+        // Nous contagis / morts es fan dins afectació
+        // hem de mostrar els casos del dia (no cal fer la dif amb el dia anterior)
 
-        // actualitzar GUI (passar nous stats a Interaccio)
-        _interaccio.updateStats(_diesSimulacio);    // falta molt, per ara només s'actualitza el dia
+        // 7. Actualitzar GUI amb les noves estadístiques
+        _interaccio.mostrarInfoDia();
     }
 
-    public void confinarRegio(Regio a, Regio b) {
-    // Pre: Regió seleccionada a la GUI
-    // Post: es confina la regió
+    public void confinarRegions(Regio a, Regio b) {
+        // Pre: Regions a i b; Post: es confina la regió
 
         // La ràtio externa de contactes d’una regió cap a l’altra passarà a ser 0.
+        a.confinamentTou(b);
+    }
+
+    public void confinarRegio(Regio a) {
+        a.confinamentDur(0.0);
     }
 }
